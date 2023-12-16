@@ -1,7 +1,8 @@
 import { createContext , useContext, useEffect, useState, } from 'react';
 import { Alert}  from 'react-native';
 import { exist } from '../utils/exist';
-import { getOrders } from '../firebase/endpoints/orders';
+import { getOrders, getOrdersOnScroll } from '../firebase/endpoints/orders';
+import { getDiscountCode } from '../firebase/endpoints/discountCodes'
 
 export const storageContext = createContext();
 export function useStorage (){
@@ -15,12 +16,36 @@ export function StorageProvider({children}){
     const [cart, setCart] = useState([])
     const [total, setTotal] = useState(0)
     const [loading, setLoading] = useState(false)
-    const [orders, setOrders] = useState()
-    function getOrdersStore(){
-        getOrders(setLoading, setOrders, 'dni', dni)
+    const [orders, setOrders] = useState([])
+    const [ordersConfirmed, setOrdersConfirmed] = useState([])
+    const [productsData, setProductsData] = useState([])
+    const [categoriesData,setCategoriesData]= useState([])
+    const [discountCodesData,setDiscountCodesData]= useState([])
+    
+    async function getOrdersStore(){
+        return await getOrders(setLoading, setOrders, 'dni', dni)
+    }
+    async function getOrdersStoreConfirmed(){
+        return await getOrders(setLoading, setOrdersConfirmed, 'status', "Confirmado")
+    }
+    async function getOrdersStorePending(){
+        return await getOrders(setLoading, setOrders, 'status', "Pendiente de confirmacion")
+    }
+    async function getOrdersStoreOnScroll(){
+        return await getOrdersOnScroll(setLoading, setOrders, 'dni', dni)
+    }
+    async function getOrdersStoreConfirmedOnScroll(){
+        return await getOrdersOnScroll(setLoading, setOrdersConfirmed, 'status', "Confirmado")
+    }
+    async function getOrdersStorePendingOnScroll(){
+        return await getOrdersOnScroll(setLoading, setOrders, 'status', "Pendiente de confirmacion")
+    }
+    
+    async function getDiscountCodeStore(id){
+        return await getDiscountCode(setLoading, setDiscountCode, id)
     }
 
-    function updateTotal(){
+    function updateTotal(){ 
         if(cart.length){
             const total = cart.reduce(function (acc, obj) { return Number(acc) + (Number(obj.dolar_price)*Number(obj.amount)) }, 0)
             return total
@@ -69,8 +94,38 @@ export function StorageProvider({children}){
         });
         setCart(updatedCart)
     }
+    
     return (
-        <storageContext.Provider value={{dni, setDni, discountCode, setDiscountCode, cart, total, orders, loading, setLoading, cleanCart, removeProductFromCart, addProductToCart, updateAmountProduct, getOrdersStore }}>
+        <storageContext.Provider value={
+            {dni, 
+            setDni, 
+            discountCode, 
+            setDiscountCode, 
+            getDiscountCodeStore, 
+            cart, 
+            total, 
+            orders, 
+            loading, 
+            setLoading, 
+            cleanCart, 
+            removeProductFromCart, 
+            addProductToCart, 
+            updateAmountProduct, 
+            getOrdersStore,
+            productsData,
+            setProductsData,
+            categoriesData,
+            setCategoriesData,
+            discountCodesData,
+            setDiscountCodesData,
+            ordersConfirmed,
+            getOrdersStorePending,
+            getOrdersStoreConfirmed,
+            getOrdersStoreOnScroll,
+            getOrdersStoreConfirmedOnScroll,
+            getOrdersStorePendingOnScroll,
+            setCart
+            }}>
             {children}
         </storageContext.Provider>
     )

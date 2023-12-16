@@ -1,20 +1,21 @@
-import { getFirestore, doc , getDoc, collection, getDocs, query, orderBy, where, limit, setDoc, deleteDoc, addDoc, getDocFromCache, getDocsFromCache, startAfter} from 'firebase/firestore';
+import { getFirestore, doc , getDoc, collection, getDocs, query, orderBy, where, limit, setDoc, deleteDoc, addDoc, getDocFromCache, getDocsFromCache, startAfter, Timestamp} from 'firebase/firestore';
 import { db } from '../firebase';
 import algoliasearch from 'algoliasearch/lite'
+import {Alert} from 'react-native';
 // endpoint productos
 //////////////////////////////////////////////////////////////////////////////
-export const getProducts=  async (setLoading, setState, whereKey, whereValue)=>{
+export const getProducts=  async (setLoading, setState, atribute, value, value2 )=>{
     let response = { error: 'Los productos no fueron obtenidos' };
     setLoading(true)
     try {
         const selectedCollection = collection(db, `sections/y36IT96zUTZcNOZAGP5O/products`);
-        let querySnapshot = null 
-        if (whereKey && whereValue){
-            querySnapshot = await getDocs(query(selectedCollection, orderBy("name",'asc'),limit(10),where(whereKey,'==',whereValue)));
-            console.log(querySnapshot.docs)
-        }else{
-            querySnapshot = await getDocs(query(selectedCollection, orderBy("name",'asc'),limit(10)));
+        const queryOptions = {
+            generic:async ()=> await getDocs(query(selectedCollection, orderBy("name",'asc'),limit(10))),
+            where:async ()=> await getDocs(query(selectedCollection, orderBy("name",'asc'),limit(10),where('category_id','==',value))),
+            whereArray:async ()=> await getDocs(query(selectedCollection, orderBy("name",'asc'),limit(10),where('discount_codes', "array-contains", value))),
+            whereArrayWhere: async ()=> await getDocs(query(selectedCollection, orderBy("name",'asc'),limit(10),where('category_id','==',value),where('discount_codes', "array-contains", value2)))
         }
+        const querySnapshot = await queryOptions[atribute]()
         const productsData = querySnapshot.docs.map((product) => ({
           ...product.data(),
           id: product.id,
@@ -24,10 +25,10 @@ export const getProducts=  async (setLoading, setState, whereKey, whereValue)=>{
         setLoading(false)
     } catch (error) {
         response = { error: error.message };
-        console.log(response )
     }
     return response
 }
+
 export const searchProductsAlgolia = async (setLoading, setState, search) =>{
     let response = { error: 'Los productos no fueron obtenidos' };
     setLoading(true)
@@ -46,23 +47,22 @@ export const searchProductsAlgolia = async (setLoading, setState, search) =>{
         return response
     } catch(error) {
         response = { error: error.message };
-        console.log(response )
         setLoading(false)
         return response
     }
 }
 
-export const getProductsOnScroll =  async (setState, state , whereKey, whereValue)=>{
+export const getProductsOnScroll =  async (setLoading, setState, atribute, value, value2)=>{
     let response = { error: 'Los productos no fueron obtenidos' };
     try {
         const selectedCollection = collection(db, `sections/y36IT96zUTZcNOZAGP5O/products`);
-        let querySnapshot = null 
-        if (whereKey && whereValue){
-            querySnapshot = await getDocs(query(selectedCollection, orderBy("name",'asc'),where(whereKey,'==',whereValue), startAfter(state[state.length-1].name),limit(4)));
-            console.log(querySnapshot.docs)
-        }else{
-            querySnapshot = await getDocs(query(selectedCollection, orderBy("name",'asc'),startAfter(state[state.length-1].name),limit(4))); 
+        const queryOptions = {
+            generic:async ()=> await getDocs(query(selectedCollection, orderBy("name",'asc'),startAfter(state[state.length-1].name),limit(4))),
+            where:async ()=> await getDocs(query(selectedCollection, orderBy("name",'asc'),where('category_id','==',value),startAfter(state[state.length-1].name),limit(4))),
+            whereArray:async ()=> await getDocs(query(selectedCollection, orderBy("name",'asc'),where('discount_codes', "array-contains", value),startAfter(state[state.length-1].name),limit(4))),
+            whereArrayWhere: async ()=> await getDocs(query(selectedCollection, orderBy("name",'asc'),where('category_id','==',value),where('discount_codes', "array-contains", value2),startAfter(state[state.length-1].name),limit(4)))
         }
+        const querySnapshot = await queryOptions[atribute]()
         const productsData = querySnapshot.docs.map((product) => ({
           ...product.data(),
           id: product.id,
@@ -71,7 +71,6 @@ export const getProductsOnScroll =  async (setState, state , whereKey, whereValu
         setState([...state,...productsData])
     } catch (error) {
         response = { error: error.message };
-        console.log(response )
     }
     return response
 }
@@ -89,43 +88,49 @@ export const getProduct = async(id,setState)=>{
         }
     }catch (error) {
         response = { error: error.message };
-        console.log(response )
     }
     return response
 }
-export const deleteProduct = async(userProfile, id)=>{
-    let response = { error: 'El producto no fue eliminado' };
+export const deleteProduct = async(setLoading,id)=>{
+    setLoading(true)
     try{
-        const selectedDoc = doc(getFirestore(), "productos", id)
+        const selectedDoc = doc(db, "sections/y36IT96zUTZcNOZAGP5O/products", id)
         await deleteDoc(selectedDoc)
-        response = { success: 'Producto eliminado con exito' };
+        setLoading(false)
+        Alert.alert('Notificacion', 'Producto eliminado')
+        return true
     }catch (error) {
-        response = { error: error.message };
-        console.log(response )
+        setLoading(false)
+        Alert.alert('Notificacion', error.message)
+        return false
     }
-    return response;
 }
-export const putProduct= async(id, data)=>{
-    let response = { error: 'El producto no fue actualizado' };
+export const putProduct= async(setLoading, id, data)=>{
+    setLoading(true)
+    data = {...data , updated_date:Timestamp.now()}
     try{
-        const selectedDoc = doc(getFirestore(), "productos", id)
+        const selectedDoc = doc(db, "sections/y36IT96zUTZcNOZAGP5O/products", id)
         await  setDoc(selectedDoc, data)
-        response = { success: 'Producto actualizado con exito' };
+        setLoading(false)
+        return Alert.alert('Notificacion', 'Producto actualizado con exito')
     }catch (error) {
         response = { error: error.message };
-        console.log(response )
+        setLoading(false)
+        return Alert.alert('Notificacion',error.message )
     }
-    return response;
 }
-export const postProduct = async(data)=>{
-    let response = { error: 'El producto no fue creado'};
+export const postProduct= async(setLoading, data)=>{
+    setLoading(true)
+    data = {...data , created_date: Timestamp.now(), updated_date:Timestamp.now()}
     try{
-        const selectedCollection = collection(getFirestore(), "productos")
-        await addDoc(selectedCollection, data)
-        response = { success: 'Producto creado con exito' };
+        const selectedCollection = collection(db, "sections/y36IT96zUTZcNOZAGP5O/products")
+        await  addDoc(selectedCollection, data)
+        setLoading(false)
+        Alert.alert('Notificacion', 'Producto registrado con exito')
+        return true 
     }catch (error) {
-        response = { error: error.message };
-        console.log(response )
+        setLoading(false)
+        Alert.alert('Notificacion',error.message )
+        return false
     }
-    return response;
 }

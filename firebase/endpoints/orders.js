@@ -1,20 +1,23 @@
-import { getFirestore, doc , getDoc, collection, getDocs, query, orderBy, where, limit, setDoc, deleteDoc, addDoc, getDocFromCache, getDocsFromCache, startAfter, Timestamp} from 'firebase/firestore';
+import {doc , getDoc, collection, getDocs, query, orderBy, where, limit, setDoc, deleteDoc, addDoc, getDocFromCache, getDocsFromCache, startAfter, Timestamp} from 'firebase/firestore';
 import { db } from '../firebase';
+import {Alert} from 'react-native';
 
 //////////////////////////////////////////////////////////////////////////////
 
-export const postOrder= async(data)=>{
-    let response = { error: 'El pedido no fue creado'};
+export const postOrder= async(setLoading, data)=>{
     data = {...data , created_date: Timestamp.now(), updated_date:Timestamp.now()}
-    console.log(data)
     try{
         const selectedCollection = collection(db, `sections/y36IT96zUTZcNOZAGP5O/orders`)
         await addDoc(selectedCollection, data)
-        response = { success: 'Pedido enviado con exito' };
+        setLoading(false)
+        Alert.alert('Notificacion','Pedido enviado con exito.')
+        return true
     }catch (error) {
         response = { error: error.message };
+        setLoading(false)
+        Alert.alert('Notificacion',error.message )
+        return false
     }
-    return response;
 }
 export const deleteOrder= async(id, setLoading)=>{
     let response = { error: 'El pedido no fue eliminado'};
@@ -29,6 +32,30 @@ export const deleteOrder= async(id, setLoading)=>{
         response = { error: error.message };
         setLoading(false)
         return response;
+    }
+}
+export const comfirmedPutOrder = async(setLoading, id, data)=>{
+    setLoading(true)
+    data = {...data , status:'Confirmado', updated_date:Timestamp.now()}
+    try{
+        await Promise.all(
+            data.order.map(async (product) => {
+                const selected = doc(db, `sections/y36IT96zUTZcNOZAGP5O/products`, product.id);
+                const obtainDoc = await getDoc(selected)
+                const descomprimedDoc = {...obtainDoc.data(), id:obtainDoc.id}
+                const updatedDoc = {...descomprimedDoc,stock: Number(descomprimedDoc.stock)-Number(product.amount)}
+                await setDoc(selected,(updatedDoc))
+            })
+        );
+        const selectedDoc = doc(db, "sections/y36IT96zUTZcNOZAGP5O/orders", id)
+        await  setDoc(selectedDoc, data)
+        setLoading(false)
+        Alert.alert('Notificacion', 'Pedido confirmado con exito, Stock actualizado')
+        return true
+    }catch (error) {
+        setLoading(false)
+        Alert.alert('Notificacion',error.message )
+        return false
     }
 }
 export const getOrders=  async (setLoading, setState, whereKey, whereValue)=>{
@@ -80,16 +107,16 @@ export const searchProductsAlgolia = async (setLoading, setState, search) =>{
     }
 }
 
-export const getProductsOnScroll =  async (setState, state , whereKey, whereValue)=>{
+export const getOrdersOnScroll =  async (setState, state , whereKey, whereValue)=>{
     let response = { error: 'Los productos no fueron obtenidos' };
     try {
-        const selectedCollection = collection(db, `sections/y36IT96zUTZcNOZAGP5O/products`);
+        const selectedCollection = collection(db, `sections/y36IT96zUTZcNOZAGP5O/orders`);
         let querySnapshot = null 
         if (whereKey && whereValue){
-            querySnapshot = await getDocs(query(selectedCollection, orderBy("name",'asc'),where(whereKey,'==',whereValue), startAfter(state[state.length-1].name),limit(4)));
+            querySnapshot = await getDocs(query(selectedCollection, orderBy("name",'asc'),where(whereKey,'==',whereValue), startAfter(state[state.length-1].name),limit(10)));
             console.log(querySnapshot.docs)
         }else{
-            querySnapshot = await getDocs(query(selectedCollection, orderBy("name",'asc'),startAfter(state[state.length-1].name),limit(4))); 
+            querySnapshot = await getDocs(query(selectedCollection, orderBy("name",'asc'),startAfter(state[state.length-1].name),limit(10))); 
         }
         const productsData = querySnapshot.docs.map((product) => ({
           ...product.data(),

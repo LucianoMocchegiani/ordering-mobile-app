@@ -1,56 +1,63 @@
 import { StatusBar } from 'react-native';
 import React, { useState, useEffect} from "react";
 import {View, Text, StyleSheet, Dimensions, Alert, TextInput, TouchableOpacity } from 'react-native';
-import { useStorage } from '../../context/storageContext';
+import { useAuth } from '../../context/authContext';
 import Loading from '../customer/reutilizables/Loading'
 const heigtStatusBar = StatusBar.currentHeight
 const {width, height} = Dimensions.get('window');
 
-function validate(input) {
+export function validate(input) {
     let errors = {};
-    if (!input.dni){
-        errors.dni = '*Ingresa un dni'
-    }else if(isNaN(Number(input.dni))){
-        errors.dni = '*El dni debe incluir solo numeros'
-    }else if (input.dni.length < 7 || input.dni.length > 9 ){
-        errors.password = '*DNI escrito incorrectamente'
+    if (!input.email) {
+      errors.email = '*ingresa un email'
+    // }else if (emailRegex.test(input.email)){
+    //   errors.email = '*formato incorrecto'
     }
-    if (!input.discountCode){
-      errors.discountCode = '*Codigo incorrecto'
-    } 
+    if (!input.password){
+      errors.summary = '*ingresa una contraseña'
+    }else if (input.password.length < 6){
+      errors.password = '*debe contener al menos 6 caracteres'
+    }else if (input.password.length > 60){
+      errors.password = '*no puede contener mas de 60 caracteres'
+    }
+    
     return errors;
 };
 
 function Header(){
     return(
         <View style={styles.containerHeader}>
-            <Text style={{textTransform:"uppercase", color:'#5c7ae3', fontSize:40}}>Ingresar</Text>
+            <Text style={{textTransform:"uppercase", color:'#5c7ae3', fontSize:40}}>Ingresar cuenta</Text>
         </View>
     )
 }
 
-export default function Login({navigation}){
-    const {dni, setDni, discountCode, loading, getDiscountCodeStore}= useStorage()
+export default function LoginAcount({navigation}){
+    const {login, user, loading, setLoading} = useAuth()
+    
+    const [componentState, setComponentState] = useState({
+      email: "",
+      password: "",
+    });
     const [formErrors, setFormErrors] = useState(false)
+    
+    async function handleLogin (){
 
-    const [componentState , setComponentState] = useState({
-        dni:'',
-        discountCode:''
-    })
-
-    async function login (){
         if(Object.keys(validate(componentState)).length){
             return setFormErrors(true)
         }else{
-            const responce = await getDiscountCodeStore(componentState.discountCode)
-            if(responce.error){
+            setLoading(true)
+            const responce =  await login(componentState.email, componentState.password)
+            if(Object.keys(responce)[0]==='error'){
+                setFormErrors(responce)
+                setLoading(false)
                 Alert.alert('Error', responce.error)
-            }else{
-                setDni(componentState.dni)
+            }else if(Object.keys(responce)[0]==='successful'){
+                setLoading(false)
             }
-            
         }
     }
+
     const handleChange = (e, atribute) => {       
         setComponentState({
             ...componentState,
@@ -59,10 +66,10 @@ export default function Login({navigation}){
     }
    
     useEffect(()=>{
-        if(dni && discountCode){
-            navigation.navigate('navBar')
+        if(user){
+            navigation.navigate('navBarAdmin')
         }
-    },[dni, discountCode])
+    },[user])
 
     return (
         <View style={styles.container}>
@@ -70,26 +77,26 @@ export default function Login({navigation}){
             {loading?<Loading/>:<>
             <TextInput
                 style={styles.textInput}
-                onChangeText={(e) => handleChange(e,'dni')}
-                placeholder={'Ingrese DNI...'}
+                onChangeText={(e) => handleChange(e,'email')}
+                placeholder={'Ingrese email...'}
             />
-            <Text style={styles.error}>{validate(componentState).dni&&formErrors?validate(componentState).dni:''}</Text>
+            <Text style={styles.error}>{validate(componentState).email&&formErrors?validate(componentState).email:''}</Text>
              <TextInput
                 style={styles.textInput}
-                onChangeText={(e) => handleChange(e,'discountCode')}
-                placeholder={'Ingrese codigo...'}
+                onChangeText={(e) => handleChange(e,'password')}
+                placeholder={'Ingrese contraseña...'}
             />
-            <Text style={styles.error}>{validate(componentState).discountCode&&formErrors?validate(componentState).discountCode:''}</Text>
+            <Text style={styles.error}>{validate(componentState).password&&formErrors?validate(componentState).password:''}</Text>
             <TouchableOpacity  
-                onPress={() => login()}
+                onPress={() => handleLogin()}
                 style={styles.button}
             >
                 <Text style={styles.text}>Ingresar</Text>
-            </TouchableOpacity>
+            </TouchableOpacity></>}
             <TouchableOpacity
-            onPress={()=>navigation.navigate('loginAccount')}
+                onPress={()=>navigation.navigate('register')}
             >
-            <Text style={styles.textGray}>Ingresar con cuenta.</Text></TouchableOpacity></>}
+            <Text style={styles.textGray}>No tengo cuenta.</Text></TouchableOpacity>
         </View>
     )
 }

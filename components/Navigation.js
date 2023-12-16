@@ -5,12 +5,21 @@ import {AuthProvider, } from '../context/authContext'
 import { StorageProvider } from '../context/storageContext';
 //-------components
 import Login from './login/Login'
+import LoginAccount from './login/LoginAccount'
+import Register from './login/Register'
 import NavBar from './NavigationNavBar'
-import NewOrder from './orders/NewOrder'
-import OrderDetail from './orders/OrderDetail'
-import NuevoProducto from './productos/NuevoProducto'
-import DetalleProducto from './productos/DetalleProducto'
-
+import NavBarAdmin from './NavigationNavBarAdmin'
+import NewOrder from './customer/orders/NewOrder'
+import OrderDetail from './customer/orders/OrderDetail'
+import OrderDetailAdmin from './admin/orders/OrderDetail'
+import ProductDetail from '../components/admin/product/ProductoDetail'
+import NewProduct from '../components/admin/product/NewProduct'
+import NewDiscountCode from '../components/admin/codes/NewDiscountCode'
+import NewCategory from '../components/admin/categories/NewCategory'
+import CodesScreen from '../components/admin/codes/CodesScreen'
+import DiscountCodeDetail from '../components/admin/codes/DiscountCodeDetail'
+import CategoryDetail from '../components/admin/categories/CategoryDetail'
+import CategoryScreen from '../components/admin/categories/CategoriesScreen'
 const Stack = createNativeStackNavigator();
 
 export default function Navigation(){
@@ -25,12 +34,22 @@ export default function Navigation(){
                     headerShown: false,
                 }}>
                 <Stack.Screen name="login" component={Login}/>
-                {/* //-----------------------Ingreso Propietario------------------------------------ */}
+                <Stack.Screen name="loginAccount" component={LoginAccount}/>
+                <Stack.Screen name="register" component={Register}/>
+                {/* //-----------------------Ingreso Admin------------------------------------ */}
                 <Stack.Screen name="navBar" component={NavBar} />
+                <Stack.Screen name="navBarAdmin" component={NavBarAdmin} />
+                <Stack.Screen name="newProduct" component={NewProduct}/>
+                <Stack.Screen name="productDetail" component={ProductDetail}/>
+                <Stack.Screen name="newDiscountCode" component={NewDiscountCode}/>
+                <Stack.Screen name="newCategory" component={NewCategory}/>
+                <Stack.Screen name="codesScreen" component={CodesScreen}/>
+                <Stack.Screen name="discountCodeDetail" component={DiscountCodeDetail}/>
+                <Stack.Screen name="categoryScreen" component={CategoryScreen}/>
+                <Stack.Screen name="categoryDetail" component={CategoryDetail}/>
+                <Stack.Screen name="orderDetailAdmin" component={OrderDetailAdmin}/>   
+                {/* //-----------------------Ingreso Cliente------------------------------------ */}
                 <Stack.Screen name="newOrder" component={NewOrder}/>
-                {/* //-----------------------Ingreso Propietario------------------------------------ */}
-                <Stack.Screen name="nuevoProducto" component={NuevoProducto}/>
-                <Stack.Screen name="detalleProducto" component={DetalleProducto}/>
                 <Stack.Screen name="orderDetail" component={OrderDetail}/>                   
             </Stack.Navigator>
             </StorageProvider>
