@@ -1,7 +1,4 @@
 {
-  "cli": {
-    "version": ">= 3.5.2"
-  },
   "build": {
     "preview": {
       "android": {
@@ -16,7 +13,9 @@
     "preview3": {
       "developmentClient": true
     },
+    "preview4": {
+      "distribution": "internal"
+    },
     "production": {}
   }
- 
 }

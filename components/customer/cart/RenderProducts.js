@@ -14,7 +14,7 @@ export default function RenderProducts({data}){
                 return (
                     <CardProduct
                         category={item.category_id}
-                        image={null}
+                        image={item.image}
                         name={item.name}
                         description={item.description}
                         type={item.type}

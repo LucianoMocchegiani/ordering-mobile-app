@@ -1,12 +1,15 @@
 import {View, Text, StyleSheet, Dimensions} from 'react-native';
 const {width, height} = Dimensions.get('window');
-
+import {useStorage} from '../../../context/storageContext';
 export default function CardProduct({category, name, description, price, amount }){
+    const { categoriesData }= useStorage()
+    const categoryName= categoriesData.filter(e => e.id === category)
+
     return(
         <View style={CardProductStyle.container}>
             <View style={{flexDirection:'row', width:'100%', justifyContent:'flex-start', alignItems:'center'}}>
-                <Text style={CardProductStyle.category}>{category}</Text>
-                <Text style={CardProductStyle.name}>{name}</Text>
+                <Text style={CardProductStyle.category}>{categoryName[0]?.name}</Text>
+                <Text style={{...CardProductStyle.name, marginLeft:20}}>{name}</Text>
             </View>
             <View style={{width:'100%'}}>
                 <Text style={CardProductStyle.description}>{description}</Text>

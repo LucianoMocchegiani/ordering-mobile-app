@@ -1,4 +1,4 @@
-import {  doc , collection, getDocs, query, orderBy, setDoc,  addDoc, Timestamp} from 'firebase/firestore';
+import {  doc ,deleteDoc, collection, getDocs, query, orderBy, setDoc,  addDoc, Timestamp} from 'firebase/firestore';
 import { db } from '../firebase';
 import {Alert} from 'react-native';
 // endpoint productos
@@ -52,3 +52,22 @@ export const postCategory= async(setLoading, data)=>{
         return false
     }
 }
+
+export const deleteCategory= async(id, setLoading)=>{
+    let response = { error: 'La categoria no fue eliminada'};
+    console.log(id)
+    setLoading(true)
+    try{
+        const selectedDoc = doc(db, `sections/y36IT96zUTZcNOZAGP5O/categories`, id)
+        await deleteDoc(selectedDoc)
+        response = true;
+        setLoading(false)
+        return response;
+
+    }catch (error) {
+        response = false;
+        setLoading(false)
+        return response;
+    }
+}
+

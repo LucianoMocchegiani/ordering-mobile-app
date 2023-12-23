@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "383604096349",
+    "project_id": "cm-security-d6aa6",
+    "storage_bucket": "cm-security-d6aa6.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:383604096349:android:1997714e350704fba8bcb4",
+        "android_client_info": {
+          "package_name": "com.timberli.cmsecurity"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "383604096349-2dfrb7d4l9t3m686199pags39sej0t8q.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC350m36R445QIViaA0PG3nqZT5D_9w5Wk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "383604096349-2dfrb7d4l9t3m686199pags39sej0t8q.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

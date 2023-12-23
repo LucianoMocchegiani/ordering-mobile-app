@@ -20,6 +20,7 @@ import CodesScreen from '../components/admin/codes/CodesScreen'
 import DiscountCodeDetail from '../components/admin/codes/DiscountCodeDetail'
 import CategoryDetail from '../components/admin/categories/CategoryDetail'
 import CategoryScreen from '../components/admin/categories/CategoriesScreen'
+import Notifications from './Notifications'
 const Stack = createNativeStackNavigator();
 
 export default function Navigation(){
@@ -36,6 +37,7 @@ export default function Navigation(){
                 <Stack.Screen name="login" component={Login}/>
                 <Stack.Screen name="loginAccount" component={LoginAccount}/>
                 <Stack.Screen name="register" component={Register}/>
+                <Stack.Screen name="notifications" component={Notifications}/>
                 {/* //-----------------------Ingreso Admin------------------------------------ */}
                 <Stack.Screen name="navBar" component={NavBar} />
                 <Stack.Screen name="navBarAdmin" component={NavBarAdmin} />

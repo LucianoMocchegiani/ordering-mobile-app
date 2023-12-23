@@ -51,7 +51,7 @@ export default function NewOrder({navigation}){
             const responce = await postOrder(setLoading, data)
             if(responce){
                 getOrdersStore()
-                navigation.navigate('orders')
+                navigation.navigate('Pedidos')
                 setCart([])
 
             }

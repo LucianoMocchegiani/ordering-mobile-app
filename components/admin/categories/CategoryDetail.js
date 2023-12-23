@@ -3,7 +3,7 @@ import React, { useState, useEffect} from "react";
 import {View, TextInput, StyleSheet, Dimensions, TouchableOpacity, Text, StatusBar,Alert} from 'react-native';
 import DataFormContainer from '../reutilizables/DataFormContainer';
 import ButtonHeader from '../reutilizables/ButtonHeader'
-import {putCategory, getCategories} from '../../../firebase/endpoints/categories'
+import {putCategory, getCategories, deleteCategory} from '../../../firebase/endpoints/categories'
 import { useStorage } from '../../../context/storageContext';
 import Loading from '../reutilizables/Loading';
 const heigtStatusBar = StatusBar.currentHeight
@@ -39,9 +39,37 @@ export default function CategoryDetail({navigation, route}){
             const responce = await putCategory(setLoading, id, category)
             if(responce){
                 getCategories(setCategoriesData)
-                navigation.navigate('tienda')
+                navigation.navigate('Tienda')
             }
         }
+    }
+    const deleteCategoryHandle= async ()=>{
+        const asistandDelete= async ()=>{
+            try {
+                const responce = await deleteCategory(id, setLoading)
+                if(responce){
+                    navigation.navigate('Tienda')
+                    getCategories(setCategoriesData)
+                    Alert.alert('Notificacion', 'Categoria eliminada.')
+
+                }else{
+                    Alert.alert('Error', 'No se puedo eliminar, reintentelo')
+                }
+            }catch(error){
+                Alert.alert('Error', error.message)
+            }
+        }
+        Alert.alert('Estas seguro?', 'Quieres eliminar esta categoria?',[
+            {
+                text: 'Eliminar',
+                onPress: async () => asistandDelete(),
+            },
+            {
+                text: 'Cancelar',
+                onPress: () => console.log('Cancelar'),
+                style: 'cancel',
+            },
+        ],)
     }
   
     return (
@@ -50,6 +78,7 @@ export default function CategoryDetail({navigation, route}){
             {loading?<Loading/>:<>
             <View style={{width:width*0.95, flexDirection:'row', justifyContent: "space-between", marginBottom:10,}}>
                 <ButtonHeader functionOnPress={()=>updatedCategory()} buttonName={'Actualizar categoria'}/>
+                <ButtonHeader functionOnPress={()=>deleteCategoryHandle()} buttonName={'Eliminar categoria'}/>
             </View>
             <View style={styles.container}>
                 <View style={styles.dataForm}>

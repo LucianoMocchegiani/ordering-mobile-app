@@ -18,7 +18,7 @@ function Header(){
     )
 }
 export default function PendingOrders({navigation, route}){
-    const {getOrdersStorePending, getOrdersStorePendingOnScroll, orders, loading, setLoading}= useStorage()
+    const {getOrdersStorePending, getOrdersStorePendingOnScroll, ordersPendings, loading}= useStorage()
 
     useEffect(()=>{
         getOrdersStorePending()
@@ -29,7 +29,7 @@ export default function PendingOrders({navigation, route}){
             <View>
                 {loading?<Loading/>:
                 <RenderOrders 
-                    data={orders} 
+                    data={ordersPendings} 
                     onScrollFunction={()=>getOrdersStorePendingOnScroll()}
                     navigation={navigation}
                     />}

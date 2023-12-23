@@ -1,6 +1,5 @@
 import {View, Text, StyleSheet, Dimensions} from 'react-native';
 import { StatusBar } from 'react-native';
-import { getOrders } from '../../../firebase/endpoints/orders';
 import React, { useState, useEffect} from "react";
 import Loading from '../reutilizables/Loading';
 import RenderOrders from './RenderOrders';

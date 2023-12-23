@@ -1,5 +1,6 @@
 import { getFirestore, doc , getDoc, collection, getDocs, query, orderBy, where, limit, setDoc, deleteDoc, addDoc, getDocFromCache, getDocsFromCache, startAfter, Timestamp} from 'firebase/firestore';
-import { db } from '../firebase';
+import { db, storage } from '../firebase';
+import { ref, uploadBytes } from 'firebase/storage';
 import algoliasearch from 'algoliasearch/lite'
 import {Alert} from 'react-native';
 // endpoint productos
@@ -105,10 +106,41 @@ export const deleteProduct = async(setLoading,id)=>{
         return false
     }
 }
+const generateBlob = async(uri)=>{
+    return new Promise((resolve, reject) => {
+        let xhr = new XMLHttpRequest();
+        xhr.onerror = reject;
+        xhr.onreadystatechange = ()=>{
+            if(xhr.readyState === 4){
+                resolve(xhr.response);
+            }
+        };
+        xhr.open("GET",uri);
+        xhr.responseType = "blob";
+        xhr.send();
+    });
+}
+
+export const uploadImageFirebase = async(uri, name)=>{
+    try{
+        const blob = await generateBlob(uri)
+        const imagesRef = ref(storage, 'images/'+name+'.jpg');
+        uploadBytes(imagesRef , blob ).then((snapshot) => {
+            console.log('Uploaded a blob or file!');
+        });
+
+    }catch(error){
+    }
+}   
 export const putProduct= async(setLoading, id, data)=>{
     setLoading(true)
-    data = {...data , updated_date:Timestamp.now()}
     try{
+        data = {...data , updated_date:Timestamp.now()}
+        if(data.image != 'https://firebasestorage.googleapis.com/v0/b/cm-security-d6aa6.appspot.com/o/images%2F'+id+'.jpg?alt=media&token=7a059b24-6f82-4106-aa69-4e0ee41a5054'){
+            console.log('la imagen no es igual')
+            await uploadImageFirebase(data.image,id)
+        }
+        data = {...data, image:'https://firebasestorage.googleapis.com/v0/b/cm-security-d6aa6.appspot.com/o/images%2F'+id+'.jpg?alt=media&token=7a059b24-6f82-4106-aa69-4e0ee41a5054'}
         const selectedDoc = doc(db, "sections/y36IT96zUTZcNOZAGP5O/products", id)
         await  setDoc(selectedDoc, data)
         setLoading(false)
@@ -134,3 +166,4 @@ export const postProduct= async(setLoading, data)=>{
         return false
     }
 }
+

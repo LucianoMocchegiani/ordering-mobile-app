@@ -8,9 +8,13 @@ import NewProductForm from './NewProductForm'
 import { postProduct } from '../../../firebase/endpoints/products';
 import { getProducts } from '../../../firebase/endpoints/products';
 import { useStorage } from '../../../context/storageContext';
+import { useEffect } from 'react';
+import validate from './validateForm';
 
 const heigtStatusBar = StatusBar.currentHeight
 const {width, height} = Dimensions.get('window');
+
+
 
 function Header(){
     return(
@@ -29,23 +33,30 @@ export default function NewProduct({navigation}){
         loading,
         setLoading,
     } = useStorage()
-  
+    const [formErrors, setFormErrors]= useState(false)
     const [product, setProduct] = useState({
         category_id : '',
         name : '',
         description : '',
-        discount_codes : '',
-        dolar_price : '',
-        image : '',
-        stock : '',
+        discount_codes : [],
+        dolar_price : 0,
+        image :[],
+        stock : 0,
         type : '',
     })
-
-    const createProduct= async (id, data)=>{
-        const responce= await postProduct(setLoading,data)
-        if(responce){
-            getProducts(setLoading,setProductsData,'generic')
-            navigation.navigate('tienda')
+    useEffect(()=>{
+        console.log(product)
+    },[product])
+    const createProduct= async (data)=>{
+        if(Object.keys(validate(product)).length){
+            return setFormErrors(true)
+        }else{
+            console.log('sss')
+            const responce= await postProduct(setLoading,data)
+            if(responce){
+                getProducts(setLoading,setProductsData,'generic')
+                navigation.navigate('Tienda')
+            }
         }
     }
     
@@ -54,10 +65,10 @@ export default function NewProduct({navigation}){
         <View style={styles.container}>
             <Header/>{loading? <Loading/>:<>
             <View style={{width:width*0.95, flexDirection:'row', justifyContent: "space-between", marginBottom:10,}}>
-                <ButtonHeader functionOnPress={()=>{createProduct(setLoading, product)}} buttonName={'Registrar producto'}/>
+                <ButtonHeader functionOnPress={()=>{createProduct(product)}} buttonName={'Registrar producto'}/>
             </View>
             <ScrollView>
-            <NewProductForm product={product} setProduct={setProduct} categories={categoriesData} discountCodes={discountCodesData}/>
+            <NewProductForm product={product} setProduct={setProduct} categories={categoriesData} discountCodes={discountCodesData} formErrors={formErrors}/>
             </ScrollView></>}
         </View>
         

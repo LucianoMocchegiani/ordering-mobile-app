@@ -2,11 +2,11 @@ import React from 'react';
 import {View, Text, StyleSheet, Dimensions} from 'react-native';
 const {width, height} = Dimensions.get('window');
 
-export default function DataContainer({data, customStyles}){
+export default function DataContainer({data, customStyles, large}){
     return(
         <>
             <View  
-                style={styles.container}>
+                style={large?styles.containerLarge:styles.container}>
                 <Text style={customStyles?customStyles.text:styles.text}>{data}</Text>
             </View>
         </>     
@@ -20,6 +20,15 @@ const styles = StyleSheet.create({
         paddingHorizontal:10,
         justifyContent:'center',
         alignItems:'center'
+    },
+    containerLarge:{
+        width:width*0.95,
+        height:height*0.05,
+        backgroundColor:"#fff",
+        paddingHorizontal:10,
+        justifyContent:'center',
+        alignItems:'center',
+        marginBottom:5,
     },
     text:{
        color: "black",

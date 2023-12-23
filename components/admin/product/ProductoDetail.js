@@ -1,13 +1,14 @@
 import { StatusBar } from 'react-native';
-import React, { useState} from "react";
+import React, { useState, useEffect} from "react";
 import {View, Text, StyleSheet, Dimensions, ScrollView, Alert} from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import Loading from '../reutilizables/Loading';
 import ButtonHeader from '../reutilizables/ButtonHeader'
 import ProductForm from './ProductForm'
-import { deleteProduct, putProduct } from '../../../firebase/endpoints/products';
+import { deleteProduct, putProduct, uploadImageFirebase  } from '../../../firebase/endpoints/products';
 import { getProducts } from '../../../firebase/endpoints/products';
 import { useStorage } from '../../../context/storageContext';
+import validate from './validateForm';
 
 const heigtStatusBar = StatusBar.currentHeight
 const {width, height} = Dimensions.get('window');
@@ -40,17 +41,27 @@ export default function ProducDetail({navigation, route}){
         updated_date : updated_date,
         created_date : created_date,
     })
+    
     const[loading, setLoading]=useState(false)
+    const [formErrors, setFormErrors]= useState(false)
+
     const saveChanges= async (id, data)=>{
-        await putProduct(setLoading, id, data)
-        getProducts(setLoading,setProductsData,'generic')
+        if(Object.keys(validate(product)).length){
+            return setFormErrors(true)
+        }else{
+            await putProduct(setLoading, id, data)
+            getProducts(setLoading,setProductsData,'generic')
+        }
     }
     const deleteProductHandle= async (id)=>{
         const asistandDelete= async ()=>{
-            const responce = await deleteProduct(setLoading, id)
-            if(responce){
-                navigation.navigate('tienda')
+            try{
+                await deleteProduct(setLoading, id)
+                navigation.navigate('Tienda')
                 getProducts(setLoading,setProductsData,'generic')
+            }catch(error){
+                console.log(error)
+
             }
         }
         Alert.alert('Estas seguro?', 'Quieres eliminar este producto?',[
@@ -75,7 +86,7 @@ export default function ProducDetail({navigation, route}){
                 <ButtonHeader functionOnPress={()=>{saveChanges(id, product)}} buttonName={'Guardar cambios'}/>
             </View>
             <ScrollView>
-            <ProductForm product={product} setProduct={setProduct} categories={categoriesData} discountCodes={discountCodesData}/>
+            <ProductForm formErrors={formErrors} product={product} setProduct={setProduct} categories={categoriesData} discountCodes={discountCodesData}/>
             </ScrollView></>}
         </View>
         

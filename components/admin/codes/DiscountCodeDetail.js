@@ -3,7 +3,7 @@ import React, { useState, useEffect} from "react";
 import {View, TextInput, StyleSheet, Dimensions, TouchableOpacity, Text, StatusBar,Alert} from 'react-native';
 import DataFormContainer from '../reutilizables/DataFormContainer';
 import ButtonHeader from '../reutilizables/ButtonHeader'
-import {putDiscountCode, getDiscountCodes} from '../../../firebase/endpoints/discountCodes'
+import {putDiscountCode, getDiscountCodes, deleteDiscountCode} from '../../../firebase/endpoints/discountCodes'
 import { useStorage } from '../../../context/storageContext';
 import Loading from '../reutilizables/Loading';
 const heigtStatusBar = StatusBar.currentHeight
@@ -49,9 +49,33 @@ export default function DiscountCodeDetail({navigation, route}){
                     id:'',
                     discount:0
                 })
-                navigation.navigate('tienda')
+                navigation.navigate('Tienda')
             }
         }
+    }
+    const deleteCodeHandle= async ()=>{
+        const asistandDelete= async ()=>{
+            try {
+                await deleteDiscountCode(id,setLoading)
+                navigation.navigate('Tienda')
+                getDiscountCodes(setDiscountCodesData)
+                Alert.alert('Notificacion', 'Codigo eliminado.')
+
+            }catch(error){
+                Alert.alert('Error', error.message)
+            }
+        }
+        Alert.alert('Estas seguro?', 'Quieres eliminar este codigo?',[
+            {
+                text: 'Eliminar',
+                onPress: async () => asistandDelete(),
+            },
+            {
+                text: 'Cancelar',
+                onPress: () => console.log('Cancelar'),
+                style: 'cancel',
+            },
+        ],)
     }
   
     return (
@@ -60,6 +84,7 @@ export default function DiscountCodeDetail({navigation, route}){
             {loading?<Loading/>:<>
             <View style={{width:width*0.95, flexDirection:'row', justifyContent: "space-between", marginBottom:10,}}>
                 <ButtonHeader functionOnPress={()=>updatedDiscountCode()} buttonName={'Guardar Cambios'}/>
+                <ButtonHeader functionOnPress={()=>deleteCodeHandle()} buttonName={'Eliminar codigo'}/>
             </View>
             <View style={styles.container}>
                 <View style={styles.dataForm}>

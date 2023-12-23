@@ -43,7 +43,6 @@ export function AuthProvider({children}){
             console.log("currentUser.uid:")
             console.log(currentUser?.uid)
             console.log("------------------------")
-            setUserProfile(currentUser?.uid)
             setLoading(false)
         })
     },[])

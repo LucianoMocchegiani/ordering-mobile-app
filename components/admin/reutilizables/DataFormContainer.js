@@ -32,6 +32,8 @@ const styles = StyleSheet.create({
         alignItems:'center',
         borderColor:"gray",
         borderWidth:1.5,
+        marginBottom:5,
+
     },
     text:{
        color: "black",

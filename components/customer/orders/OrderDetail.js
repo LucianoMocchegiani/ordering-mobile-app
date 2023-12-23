@@ -27,10 +27,15 @@ export default function OrderDetail({navigation, route}){
         {...route.params}
     )
     async function cancelOrder(id){
-        const responce = await deleteOrder(id, setLoading)
-        Alert.alert('Notificacion',responce.succes?responce.succes:responce.error)
-        getOrdersStore()
-        return navigation.navigate('orders')
+        if(order.status === 'Confirmado'){
+            Alert.alert('Notificacion','El pedido ya esta confirmado contacte al provedor para cancelarlo.')
+            return
+        }else{
+            const responce = await deleteOrder(id, setLoading)
+            Alert.alert('Notificacion',responce.succes?responce.succes:responce.error)
+            getOrdersStore()
+            return navigation.navigate('Pedidos')
+        }
     }
     return (
         

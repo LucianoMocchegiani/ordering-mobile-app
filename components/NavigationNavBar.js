@@ -10,25 +10,25 @@ export default function NavBarCustomer() {
 
   return (
     <Tab.Navigator 
-      initialRouteName="tienda"
+      initialRouteName="Tienda"
       screenOptions={{
         headerShown: false,
       }}>
-      <Tab.Screen name="tienda" component={Store} 
+      <Tab.Screen name="Tienda" component={Store} 
         options={{
           tabBarIcon: () => (
             <Icon name="storefront" color={'#5c7ae3'} size={30} />
           ),
         }}
       />
-      <Tab.Screen name="carro" component={Cart}
+      <Tab.Screen name="Carro" component={Cart}
           options={{
             tabBarIcon: () => (
               <Icon name="cart" color={'#5c7ae3'} size={30} />
             ),
           }}
       />
-      <Tab.Screen name="orders" component={RecivedOrders}
+      <Tab.Screen name="Pedidos" component={RecivedOrders}
         options={{
           tabBarIcon: () => (
             <Icon name="text-box-outline" color={'#5c7ae3'} size={30} />

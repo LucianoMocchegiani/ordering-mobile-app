@@ -92,11 +92,11 @@ export default function LoginAcount({navigation}){
                 style={styles.button}
             >
                 <Text style={styles.text}>Ingresar</Text>
-            </TouchableOpacity></>}
+            </TouchableOpacity>
             <TouchableOpacity
                 onPress={()=>navigation.navigate('register')}
             >
-            <Text style={styles.textGray}>No tengo cuenta.</Text></TouchableOpacity>
+            <Text style={styles.textGray}>No tengo cuenta.</Text></TouchableOpacity></>}
         </View>
     )
 }

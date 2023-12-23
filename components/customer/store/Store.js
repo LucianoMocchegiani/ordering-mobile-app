@@ -8,7 +8,7 @@ import { getProducts, getProductsOnScroll } from '../../../firebase/endpoints/pr
 import { getCategories } from '../../../firebase/endpoints/categories';
 import SelectComponent from '../reutilizables/Select'
 import Loading from '../reutilizables/Loading';
-
+import { useStorage } from '../../../context/storageContext';
 const heigtStatusBar = StatusBar.currentHeight
 const {width, height} = Dimensions.get('window');
 
@@ -22,8 +22,8 @@ function Header(){
 }
 
 export default function Tienda({navigation}){
+    const { categoriesData, setCategoriesData}= useStorage()
     const [productsData, setProductsData] = useState([])
-    const [categoriesData,setCategoriesData]= useState([])
     const [categorySelect,setCategorySelect]= useState({name:'Ninguna'})
     const [loading, setLoading]= useState(false)
     

@@ -7,7 +7,6 @@ export default function RenderProducts({data}){
     return (
         <View>
             <FlatList
-                nestedScrollEnabled
                 style={styles.container}
                 data={data}
                 keyExtractor={(item) => item.id}

@@ -1,11 +1,11 @@
 {
   "expo": {
     "owner": "gordoancestral",
-    "name": "business-admin",
-    "slug": "business-admin",
+    "name": "cm-security",
+    "slug": "cm-security",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/icon-business-admin.png",
+    "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
     "splash": {
       "image": "./assets/splash.png",
@@ -18,12 +18,9 @@
     "assetBundlePatterns": [
       "**/*"
     ],
-    "ios": {
-      "supportsTablet": true,
-      "bundleIdentifier": "com.Timberli.businessAdmin"
-    },
     "android": {
-      "package": "com.Timberli.businessAdmin",
+      "package": "com.timberli.cmsecurity",
+      "googleServicesFile": "./google-services.json",
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#FFFFFF"
@@ -34,7 +31,7 @@
     },
     "extra": {
       "eas": {
-        "projectId": "b639e18e-d771-41ba-a900-e3af20bc2b91"
+        "projectId": "53bf9c27-f667-43f5-87d3-d09d6c0cb4f7"
       }
     }
   }

@@ -17,6 +17,7 @@ export function StorageProvider({children}){
     const [total, setTotal] = useState(0)
     const [loading, setLoading] = useState(false)
     const [orders, setOrders] = useState([])
+    const [ordersPendings, setOrdersPendings] = useState([])
     const [ordersConfirmed, setOrdersConfirmed] = useState([])
     const [productsData, setProductsData] = useState([])
     const [categoriesData,setCategoriesData]= useState([])
@@ -29,7 +30,7 @@ export function StorageProvider({children}){
         return await getOrders(setLoading, setOrdersConfirmed, 'status', "Confirmado")
     }
     async function getOrdersStorePending(){
-        return await getOrders(setLoading, setOrders, 'status', "Pendiente de confirmacion")
+        return await getOrders(setLoading, setOrdersPendings, 'status', "Pendiente de confirmacion")
     }
     async function getOrdersStoreOnScroll(){
         return await getOrdersOnScroll(setLoading, setOrders, 'dni', dni)
@@ -38,7 +39,7 @@ export function StorageProvider({children}){
         return await getOrdersOnScroll(setLoading, setOrdersConfirmed, 'status', "Confirmado")
     }
     async function getOrdersStorePendingOnScroll(){
-        return await getOrdersOnScroll(setLoading, setOrders, 'status', "Pendiente de confirmacion")
+        return await getOrdersOnScroll(setLoading, setOrdersPendings, 'status', "Pendiente de confirmacion")
     }
     
     async function getDiscountCodeStore(id){
@@ -119,6 +120,7 @@ export function StorageProvider({children}){
             discountCodesData,
             setDiscountCodesData,
             ordersConfirmed,
+            ordersPendings,
             getOrdersStorePending,
             getOrdersStoreConfirmed,
             getOrdersStoreOnScroll,

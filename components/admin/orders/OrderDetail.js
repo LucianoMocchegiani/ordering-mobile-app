@@ -7,6 +7,7 @@ import OrderDetailForm from './OrderDetailForm';
 import ButtonHeader from '../reutilizables/ButtonHeader'
 import RenderProducts from './RenderProducts';
 import { useStorage } from '../../../context/storageContext';
+import { useAuth} from '../../../context/authContext'
 import {deleteOrder, comfirmedPutOrder} from '../../../firebase/endpoints/orders'
 import Loading from '../reutilizables/Loading'
 const heigtStatusBar = StatusBar.currentHeight
@@ -22,7 +23,8 @@ function Header(){
 }
 
 export default function OrderDetail({navigation, route}){
-    const {getOrdersStoreComfirmed, getOrdersStorePending, loading, setLoading}= useStorage()
+    const { getOrdersStorePending,getOrdersStoreConfirmed, loading, setLoading}= useStorage()
+    const {user} = useAuth()
     const [order, setOrder]= useState(
         {...route.params}
     )
@@ -33,11 +35,13 @@ export default function OrderDetail({navigation, route}){
         return navigation.navigate('orders')
     }
     async function comfirmedOrder(){
-        const responce = await comfirmedPutOrder(setLoading, order.id, order)
+        const responce = await comfirmedPutOrder(setLoading, order.id, order, user.email)
+
         if(responce){
             getOrdersStorePending()
-            getOrdersStoreComfirmed()
-            return navigation.navigate('Comfirmados')
+            getOrdersStoreConfirmed()
+            Alert.alert('Notificacion', 'Pedido confirmado con exito, Stock actualizado')
+            navigation.navigate('Confirmados')
         }
     }
     return (
@@ -47,8 +51,8 @@ export default function OrderDetail({navigation, route}){
         <ScrollView>
             <Header/>
             <View style={{width:width*0.95, flexDirection:'row', justifyContent: "space-between", marginBottom:10}}>
-                <ButtonHeader functionOnPress={()=>cancelOrder(order.id)} buttonName={'Cancelar pedido'}/>
-                <ButtonHeader functionOnPress={()=>comfirmedOrder(order.id)} buttonName={'Comfirmar'}/>
+                {order.status==='Confirmado'?<></>:<><ButtonHeader functionOnPress={()=>cancelOrder(order.id)} buttonName={'Cancelar pedido'}/>
+                <ButtonHeader functionOnPress={()=>comfirmedOrder(order.id)} buttonName={'Comfirmar'}/></>}
             </View>
             <View style={{width:width*0.95, flexDirection:'row', justifyContent: "space-between", marginBottom:10}}>
                 <DataContainer data={'Total USD '+ order.total}/>

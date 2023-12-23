@@ -34,9 +34,9 @@ export const deleteOrder= async(id, setLoading)=>{
         return response;
     }
 }
-export const comfirmedPutOrder = async(setLoading, id, data)=>{
+export const comfirmedPutOrder = async(setLoading, id, data, email)=>{
     setLoading(true)
-    data = {...data , status:'Confirmado', updated_date:Timestamp.now()}
+    data = {...data ,seller:email, status:'Confirmado', updated_date:Timestamp.now()}
     try{
         await Promise.all(
             data.order.map(async (product) => {
@@ -50,7 +50,6 @@ export const comfirmedPutOrder = async(setLoading, id, data)=>{
         const selectedDoc = doc(db, "sections/y36IT96zUTZcNOZAGP5O/orders", id)
         await  setDoc(selectedDoc, data)
         setLoading(false)
-        Alert.alert('Notificacion', 'Pedido confirmado con exito, Stock actualizado')
         return true
     }catch (error) {
         setLoading(false)

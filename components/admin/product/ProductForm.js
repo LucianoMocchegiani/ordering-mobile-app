@@ -1,14 +1,16 @@
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import React, { useState, useEffect} from "react";
-import {View, TextInput, StyleSheet, Dimensions, TouchableOpacity, Text} from 'react-native';
+import {View, TextInput, StyleSheet, Dimensions, TouchableOpacity, Text, Image, Alert} from 'react-native';
 import DataFormContainer from '../reutilizables/DataFormContainer';
 import SelectComponent from '../reutilizables/SelectStyle'
 import ApliedCodes from './ApliedCodes'
+import * as ImagePicker from 'expo-image-picker'
+import validate from './validateForm';
+
 const {width, height} = Dimensions.get('window');
 
-export default function ProductForm({product, setProduct, categories, discountCodes}){
+export default function ProductForm({product, setProduct, categories, discountCodes, formErrors}){
     const { category_id, name, description, discount_codes , dolar_price, image, stock, type, updated_date, created_date } = product
-
     function setCategoryState(obj){
         setProduct({
             ...product,
@@ -74,6 +76,38 @@ export default function ProductForm({product, setProduct, categories, discountCo
             })
         }
     }
+    const  loadImageFromGalery = async ()=>{
+        const response = {status:false, image:null}
+        const permission = await ImagePicker.requestCameraPermissionsAsync()
+        if(permission.status === 'denied'){
+            Alert.alert('Aviso','Debes permitir el acceso para subir imagenes.')
+            return 
+        }
+        const result = await ImagePicker.launchImageLibraryAsync({
+            allowsEditing:true,
+            aspect:[4,4]
+        })
+        if(result.canceled){
+            return response
+        }
+        response.status =true
+        response.image = result.assets
+        return response
+    }
+    const uploadImage = async (e)=>{
+        const response = await loadImageFromGalery()
+        if(!response.status){
+            Alert.alert('Error','No has selecionado ninguna imagen.')
+        }
+        const transform = response.image.map(e=> {return e.uri})
+        setProduct({
+            ...product,
+           image: response.image[0].uri
+        })
+
+
+    }
+    console.log(image)
     return (
         <View style={styles.container}>
             <View style={styles.dataForm}>
@@ -84,7 +118,8 @@ export default function ProductForm({product, setProduct, categories, discountCo
                     placeholder={'Ingrese nombre...'}
                     value={name}
                 />
-            </View>       
+            </View>     
+            <Text style={styles.error}>{validate(product).name&&formErrors?validate(product).name:''}</Text>  
             <View style={styles.dataForm}>
                 <DataFormContainer data={'Precio USD'}/>
                 <TextInput
@@ -93,7 +128,9 @@ export default function ProductForm({product, setProduct, categories, discountCo
                     placeholder={'Ingrese precio...'}
                     value={dolar_price.toString()}
                 />
+               
             </View>    
+            <Text style={styles.error}>{validate(product).dolar_price&&formErrors?validate(product).dolar_price:''}</Text>
             <View style={styles.dataForm}>
                 <DataFormContainer data={'Tipo'}/>
                 <TextInput
@@ -103,6 +140,7 @@ export default function ProductForm({product, setProduct, categories, discountCo
                     value={type}
                 />
             </View>    
+            <Text style={styles.error}>{validate(product).type&&formErrors?validate(product).type:''}</Text>
             <View style={styles.dataForm}>
                 <DataFormContainer data={'Categoria'}/>
                 <SelectComponent
@@ -113,6 +151,7 @@ export default function ProductForm({product, setProduct, categories, discountCo
                     selectState={dataCategoryTransform()}
                 />
             </View>    
+            <Text style={styles.error}>{''}</Text>
             <View style={styles.dataForm}>
                 <DataFormContainer data={'Codigos Aplicados'}/>
                 <ApliedCodes
@@ -123,6 +162,7 @@ export default function ProductForm({product, setProduct, categories, discountCo
                     selectFunction={setDiscountCodeState}
                 />
             </View>  
+            <Text style={styles.error}>{''}</Text>
             <View style={{...styles.dataForm, flexDirection:'column',justifyContent: "center", alignItems:'center'}}>
                 <DataFormContainer data={'Descripcion'} large={true}/>
                 <TextInput
@@ -133,13 +173,21 @@ export default function ProductForm({product, setProduct, categories, discountCo
                     multiline={true}
                     numberOfLines={8}
                 />
+              
             </View>    
+            <Text style={styles.error}>{validate(product).description&&formErrors?validate(product).description:''}</Text>
             < View style={styles.dataForm}>
                 <View style={{width:width*0.45, flexDirection:'column', justifyContent: "center", alignItems:'center'}}>
                     <DataFormContainer data={'Imagen'}/>
+                    <TouchableOpacity
+                        onPress={()=> uploadImage()}>
                     <View style={styles.imageContainer}>
-                        <Icon name={'upload'} size={150} color="#5c7ae3" />
+                        {/* {image.length? <Image source={{...image[0], width:width*0.45, height:width*0.45}} width={width*0.45} height={width*0.45}/>:
+                        <Icon name={'upload'} size={150} color="#5c7ae3" />} */}
+                        {image?<Image source={{uri:image, width:width*0.45, height:width*0.45}} width={width*0.45} height={width*0.45}/>: 
+                        <Icon name={'upload'} size={150} color="#5c7ae3" />}
                     </View>
+                    </TouchableOpacity>
                 </View>    
                 <View style={{width:width*0.45}}>
                     <DataFormContainer data={'Stock'}/>
@@ -163,10 +211,12 @@ export default function ProductForm({product, setProduct, categories, discountCo
                     </View>
                 </View>
             </View>
+            <Text style={styles.error}>{''}</Text>
             <View style={styles.dataForm}>
                 <DataFormContainer data={'Creado'}/>
                 <DataFormContainer data={created_date.toDate().toString()}/>
             </View> 
+            <Text style={styles.error}>{''}</Text>
             <View style={styles.dataForm}>
                 <DataFormContainer data={'Ultima Actualizacion'}/>
                 <DataFormContainer data={updated_date.toDate().toString()}/>
@@ -189,7 +239,6 @@ const styles = StyleSheet.create({
         width:'100%',
         flexDirection:'row', 
         justifyContent: "space-around", 
-        marginBottom:10
     },
     textInput: {
         width:width*0.45,
@@ -231,10 +280,18 @@ const styles = StyleSheet.create({
     },
     imageContainer:{
         width:width*0.45,
+        height:width*0.45,
         borderColor:"gray",
         borderWidth:1.5,
         marginTop:5,
         justifyContent:'center',
         alignItems:'center',
+    },
+    error:{
+        height:height*0.023 ,
+        color: "red",
+        textAlign: "center",
+        textTransform: "uppercase",
+        fontSize:12,
     }
 });

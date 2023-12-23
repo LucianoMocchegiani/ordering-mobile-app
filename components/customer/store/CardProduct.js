@@ -1,5 +1,5 @@
 import React, { useState, useEffect} from "react";
-import {View, Text, TouchableOpacity, StyleSheet, Dimensions, Alert} from 'react-native';
+import {View, Text, TouchableOpacity, StyleSheet, Dimensions, Alert, Image} from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import {useStorage} from '../../../context/storageContext'
 const {width, height} = Dimensions.get('window');
@@ -7,19 +7,20 @@ const {width, height} = Dimensions.get('window');
 function ProductImage({image}){
     return(
         <View style={productImageStyle.container}>
-            {!image?<Icon name={'package-variant-closed'} size={100} color="#534e4e" />:
-            <Icon name={'package-variant-closed'} size={30} color="black" />}
+            {image?<Image source={{uri:image, width:width*0.30, height:width*0.30}} width={width*0.30} height={width*0.30}/>: 
+            <Icon name={'package-variant-closed'} size={100} color="#534e4e" />}
         </View>
     )
 }
 const productImageStyle = StyleSheet.create({
     container: {
-      width:'32%',
+      width:width*0.30,
       marginLeft:'4%',
       marginRight:'4%',
-      height:'100%',
+      height:width*0.30,
       alignItems: "center",
       justifyContent: "center",
+      backgroundColor:'red'
     },
 });
 
@@ -96,7 +97,8 @@ const ToCarButtonStyle = StyleSheet.create({
 });
 
 export default function CardProduct({category, image, name, description, price, product}){
-    const { discountCode }= useStorage()
+
+    const { discountCode ,  categoriesData }= useStorage()
     function discountValue(){
         if(Number(discountCode.discount) === 0){
             return null
@@ -113,9 +115,10 @@ export default function CardProduct({category, image, name, description, price, 
             return null
         }
     }
+    const categoryName= categoriesData.filter(e => e.id === category)
     return(
         <View style={CardProductStyle.container}>
-            <Text style={CardProductStyle.category}>{category}</Text>
+            <Text style={CardProductStyle.category}>{categoryName[0]?.name}</Text>
             <View style={{flexDirection:'row', height:'60%', width:'100%',}}>
                 <ProductImage
                     image={image}

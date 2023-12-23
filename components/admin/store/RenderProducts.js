@@ -16,7 +16,7 @@ export default function RenderProducts({data, onScrollFunction, navigation, disc
                     <CardProduct 
                         key={item.id}
                         category={item.category_id}
-                        image={null}
+                        image={item.image}
                         name={item.name}
                         description={item.description}
                         type={item.type}
