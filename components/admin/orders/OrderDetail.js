@@ -36,7 +36,6 @@ export default function OrderDetail({navigation, route}){
     }
     async function comfirmedOrder(){
         const responce = await comfirmedPutOrder(setLoading, order.id, order, user.email)
-
         if(responce){
             getOrdersStorePending()
             getOrdersStoreConfirmed()
@@ -75,7 +74,7 @@ export default function OrderDetail({navigation, route}){
 
 const styles = StyleSheet.create({
     container: {
-      marginTop:heigtStatusBar,
+        paddingTop:heigtStatusBar,
       flex: 1,
       width:width,
       backgroundColor: "#fff",

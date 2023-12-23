@@ -20,7 +20,6 @@ const productImageStyle = StyleSheet.create({
       height:width*0.30,
       alignItems: "center",
       justifyContent: "center",
-      backgroundColor:'red'
     },
 });
 

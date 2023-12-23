@@ -32,7 +32,7 @@ export const getProducts=  async (setLoading, setState, atribute, value, value2 
 
 export const searchProductsAlgolia = async (setLoading, setState, search) =>{
     let response = { error: 'Los productos no fueron obtenidos' };
-    setLoading(true)
+    // setLoading(true)
     const APPLICATION_ID = 'LFA4TZIVY9'
     const SEARCH_API_KEY = '04aa1f68be712a2b86f3106f3183abc8'
     const ALGOLIA_INDEX = 'cm_security_products'
@@ -43,8 +43,8 @@ export const searchProductsAlgolia = async (setLoading, setState, search) =>{
             hitsPerPage: 5
         })
         const results = hits
-        setState(results)
-        setLoading(false)
+        setState(results)    
+        // setLoading(false)
         return response
     } catch(error) {
         response = { error: error.message };
@@ -75,20 +75,27 @@ export const getProductsOnScroll =  async (setLoading, setState, atribute, value
     }
     return response
 }
-export const getProduct = async(id,setState)=>{
+export const getProduct = async(setLoading,id,setState)=>{
     let response = { error: 'El producto no fue obtenido' };
+    setLoading(true)
     try{
         const selectedDoc = doc(getFirestore(), "sections/y36IT96zUTZcNOZAGP5O/products", id)
-        const docSnapshot = await getDoc(selectedDoc).then(res => setState({...res.data(), id:res.id}))
+        const docSnapshot = await getDoc(selectedDoc)
         if (docSnapshot.exists()) {
-            const productData = { ...docSnapshot.data(), id: docSnapshot.id };
+            const productData = [{ ...docSnapshot.data(), id: docSnapshot.id }];
             setState(productData);
             response = { success: 'Producto obtenido con exito', productData };
+            setLoading(false)
+            onsole.log(productData)
         } else {
             response = { error: 'No existe el producto' };
+            setLoading(false)
+            console.log(response)
         }
     }catch (error) {
         response = { error: error.message };
+        setLoading(false)
+        console.log(error)
     }
     return response
 }
@@ -130,6 +137,7 @@ export const uploadImageFirebase = async(uri, name)=>{
         });
 
     }catch(error){
+        console.log(error)
     }
 }   
 export const putProduct= async(setLoading, id, data)=>{
@@ -156,7 +164,13 @@ export const postProduct= async(setLoading, data)=>{
     data = {...data , created_date: Timestamp.now(), updated_date:Timestamp.now()}
     try{
         const selectedCollection = collection(db, "sections/y36IT96zUTZcNOZAGP5O/products")
-        await  addDoc(selectedCollection, data)
+        const responce = (await addDoc(selectedCollection, data)).id
+        if(data.image && data.image !== ""){
+            await uploadImageFirebase(data.image, responce )
+            data = {...data, image:'https://firebasestorage.googleapis.com/v0/b/cm-security-d6aa6.appspot.com/o/images%2F'+responce+'.jpg?alt=media&token=7a059b24-6f82-4106-aa69-4e0ee41a5054'}
+            const selectedDoc = doc(db, "sections/y36IT96zUTZcNOZAGP5O/products", responce)
+            await setDoc(selectedDoc, data)
+        }
         setLoading(false)
         Alert.alert('Notificacion', 'Producto registrado con exito')
         return true 

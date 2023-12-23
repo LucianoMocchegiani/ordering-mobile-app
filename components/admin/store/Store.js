@@ -73,11 +73,12 @@ export default function Tienda({navigation}){
         <View style={styles.container}>
             <Header/>
             <View style={{width:width*0.95, flexDirection:'row', justifyContent: "space-between", marginBottom:10,}}>
-                <AlgoliaSearch
+                <View><AlgoliaSearch
                     setRender={setProductsData}
                     placeholder= {'Buscar producto...'}
                     setLoading={setLoading}
-                />
+                    getSearch={()=>getProducts(setLoading,setProductsData,'generic')}
+                /></View>
                 <ButtonHeader functionOnPress={()=>navigation.navigate('newProduct')} buttonName={'Nuevo producto'}/>
             </View>
             <View style={{width:width*0.95, flexDirection:'row', justifyContent: "space-between", marginBottom:10,}}>
@@ -116,7 +117,7 @@ export default function Tienda({navigation}){
 
 const styles = StyleSheet.create({
     container: {
-      marginTop:heigtStatusBar,
+        paddingTop:heigtStatusBar,
       flex: 1,
       width:width,
       backgroundColor: "#fff",

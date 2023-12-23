@@ -8,8 +8,8 @@ import NewProductForm from './NewProductForm'
 import { postProduct } from '../../../firebase/endpoints/products';
 import { getProducts } from '../../../firebase/endpoints/products';
 import { useStorage } from '../../../context/storageContext';
-import { useEffect } from 'react';
 import validate from './validateForm';
+
 
 const heigtStatusBar = StatusBar.currentHeight
 const {width, height} = Dimensions.get('window');
@@ -20,7 +20,7 @@ function Header(){
     return(
         <View style={styles.containerHeader}>
             <Icon name={'package-variant-closed'} size={40} color="#5c7ae3" />
-            <Text style={{textTransform:"uppercase", marginLeft:5}}>Detalle del producto</Text>
+            <Text style={{textTransform:"uppercase", marginLeft:5}}>Nuevo producto</Text>
         </View>
     )
 }
@@ -40,13 +40,10 @@ export default function NewProduct({navigation}){
         description : '',
         discount_codes : [],
         dolar_price : 0,
-        image :[],
+        image :"",
         stock : 0,
         type : '',
     })
-    useEffect(()=>{
-        console.log(product)
-    },[product])
     const createProduct= async (data)=>{
         if(Object.keys(validate(product)).length){
             return setFormErrors(true)
@@ -77,7 +74,7 @@ export default function NewProduct({navigation}){
 
 const styles = StyleSheet.create({
     container: {
-      marginTop:heigtStatusBar,
+        paddingTop:heigtStatusBar,
       flex: 1,
       width:width,
       backgroundColor: "#fff",

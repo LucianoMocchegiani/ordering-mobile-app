@@ -38,11 +38,11 @@ export default function Tienda({navigation}){
         getCategories(setCategoriesData)
         unsubscribe()
     },[navigation])
-    let getOnScroll = async ()=> {getProductsOnScroll(setLoading,setProductsData,'generic')}
+    let getOnScroll = async ()=> getProductsOnScroll(setLoading,setProductsData,'generic')
     useEffect(()=>{
         if(categorySelect.name != 'Ninguna'){
             getProducts(setLoading,setProductsData,'where',categorySelect.id)
-            getOnScroll = async ()=> {getProductsOnScroll(setLoading,setProductsData,'where',categorySelect.id)}
+            getOnScroll = async ()=> getProductsOnScroll(setLoading,setProductsData,'where',categorySelect.id)
         }else{
             getProducts(setLoading,setProductsData,'generic')
             getOnScroll = async ()=> getProductsOnScroll(setLoading,setProductsData,'generic')
@@ -52,11 +52,12 @@ export default function Tienda({navigation}){
         <View style={styles.container}>
             <Header/>
             <View style={{width:width*0.95, flexDirection:'row', justifyContent: "space-between", marginBottom:10,}}>
-                <AlgoliaSearch
+            <View><AlgoliaSearch
                     setRender={setProductsData}
                     placeholder= {'Buscar producto...'}
                     setLoading={setLoading}
-                />
+                    getSearch={()=>getProducts(setLoading,setProductsData,'generic')}
+                /></View>
                 <SelectComponent
                     text={'categoria'}
                     text2={''}
@@ -77,7 +78,7 @@ export default function Tienda({navigation}){
 
 const styles = StyleSheet.create({
     container: {
-      marginTop:heigtStatusBar,
+      paddingTop:heigtStatusBar,
       flex: 1,
       width:width,
       backgroundColor: "#fff",

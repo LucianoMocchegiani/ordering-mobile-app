@@ -64,7 +64,7 @@ const styles = StyleSheet.create({
         height:height*0.08,
     },
     containerAll: {
-        marginTop:heigtStatusBar,
+        paddingTop:heigtStatusBar,
         flex: 1,
         width:width,
         backgroundColor: "#fff",

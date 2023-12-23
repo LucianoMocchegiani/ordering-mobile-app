@@ -4,8 +4,7 @@ import {View, TextInput, StyleSheet, Dimensions, TouchableOpacity, Text, Image} 
 import DataFormContainer from '../reutilizables/DataFormContainer';
 import SelectComponent from '../reutilizables/SelectStyle'
 import ApliedCodes from './ApliedCodes'
-import Permissions from 'expo-permissions'
-import ImagePicker from 'expo-image-picker'
+import * as ImagePicker from 'expo-image-picker'
 import validate from './validateForm';
 
 const {width, height} = Dimensions.get('window');
@@ -80,34 +79,36 @@ export default function ProductForm({product, setProduct, categories, discountCo
     }
     const  loadImageFromGalery = async ()=>{
         const response = {status:false, image:null}
-        const resultPermissions = await Permissions.askAsync(Permissions.CAMERA)
-        if(resultPermissions.status === 'denied'){
+        const permission = await ImagePicker.requestCameraPermissionsAsync()
+        if(permission.status === 'denied'){
             Alert.alert('Aviso','Debes permitir el acceso para subir imagenes.')
-            return response
+            return 
         }
         const result = await ImagePicker.launchImageLibraryAsync({
             allowsEditing:true,
-            aspect:array
+            aspect:[4,4]
         })
         if(result.canceled){
             return response
         }
         response.status =true
-        response.image =result.url
+        response.image = result.assets
         return response
     }
     const uploadImage = async (e)=>{
-        const response = await loadImageFromGalery([4,4])
+        const response = await loadImageFromGalery()
         if(!response.status){
             Alert.alert('Error','No has selecionado ninguna imagen.')
         }
-        console.log(response.image)
+        const transform = response.image.map(e=> {return e.uri})
         setProduct({
             ...product,
-           image: response.image
+           image: response.image[0].uri
         })
 
+
     }
+
     return (
         <View style={styles.container}>
             <View style={styles.dataForm}>
@@ -182,13 +183,13 @@ export default function ProductForm({product, setProduct, categories, discountCo
             < View style={styles.dataForm}>
                 <View style={{width:width*0.45, flexDirection:'column', justifyContent: "center", alignItems:'center'}}>
                     <DataFormContainer data={'Imagen'}/>
-                    {/* <TouchableOpacity
+                    <TouchableOpacity
                         onPress={()=> uploadImage()}>
                     <View style={styles.imageContainer}>
-                        {image? <Image source={{uri: image}}/>:
+                        {image?<Image source={{uri:image, width:width*0.45, height:width*0.45}} width={width*0.45} height={width*0.45}/>: 
                         <Icon name={'upload'} size={150} color="#5c7ae3" />}
                     </View>
-                    </TouchableOpacity> */}
+                    </TouchableOpacity>
                 </View> 
              
                 <View style={{width:width*0.45}}>

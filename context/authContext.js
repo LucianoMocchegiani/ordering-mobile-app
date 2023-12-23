@@ -37,12 +37,6 @@ export function AuthProvider({children}){
     useEffect(() => {
         onAuthStateChanged(auth, currentUser =>{
             setUser(currentUser)
-            console.log("------------------------")
-            console.log("AuthProvider")
-            console.log("Combrobando si hay usuario logeado")
-            console.log("currentUser.uid:")
-            console.log(currentUser?.uid)
-            console.log("------------------------")
             setLoading(false)
         })
     },[])

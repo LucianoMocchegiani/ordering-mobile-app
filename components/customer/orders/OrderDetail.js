@@ -58,7 +58,7 @@ export default function OrderDetail({navigation, route}){
 
 const styles = StyleSheet.create({
     container: {
-      marginTop:heigtStatusBar,
+        paddingTop:heigtStatusBar,
       flex: 1,
       width:width,
       backgroundColor: "#fff",

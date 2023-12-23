@@ -64,10 +64,10 @@ export const getOrders=  async (setLoading, setState, whereKey, whereValue)=>{
         const selectedCollection = collection(db, `sections/y36IT96zUTZcNOZAGP5O/orders`);
         let querySnapshot = null 
         if (whereKey && whereValue){
-            querySnapshot = await getDocs(query(selectedCollection, orderBy("created_date",'asc'),limit(10),where(whereKey,'==',whereValue)));
+            querySnapshot = await getDocs(query(selectedCollection, orderBy("created_date",'desc'),limit(10),where(whereKey,'==',whereValue)));
             console.log(querySnapshot.docs)
         }else{
-            querySnapshot = await getDocs(query(selectedCollection, orderBy("created_date",'asc'),limit(10)));
+            querySnapshot = await getDocs(query(selectedCollection, orderBy("created_date",'desc'),limit(10)));
         }
         const productsData = querySnapshot.docs.map((product) => ({
           ...product.data(),
@@ -112,10 +112,10 @@ export const getOrdersOnScroll =  async (setState, state , whereKey, whereValue)
         const selectedCollection = collection(db, `sections/y36IT96zUTZcNOZAGP5O/orders`);
         let querySnapshot = null 
         if (whereKey && whereValue){
-            querySnapshot = await getDocs(query(selectedCollection, orderBy("name",'asc'),where(whereKey,'==',whereValue), startAfter(state[state.length-1].name),limit(10)));
+            querySnapshot = await getDocs(query(selectedCollection, orderBy("created_date",'desc'),where(whereKey,'==',whereValue), startAfter(state[state.length-1].name),limit(10)));
             console.log(querySnapshot.docs)
         }else{
-            querySnapshot = await getDocs(query(selectedCollection, orderBy("name",'asc'),startAfter(state[state.length-1].name),limit(10))); 
+            querySnapshot = await getDocs(query(selectedCollection, orderBy("created_date",'desc'),startAfter(state[state.length-1].name),limit(10))); 
         }
         const productsData = querySnapshot.docs.map((product) => ({
           ...product.data(),

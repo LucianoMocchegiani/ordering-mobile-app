@@ -176,7 +176,7 @@ const styles = StyleSheet.create({
         alignItems:'center',
     },
     containerAll: {
-        marginTop:heigtStatusBar,
+        paddingTop:heigtStatusBar,
         flex: 1,
         width:width,
         backgroundColor: "#fff",

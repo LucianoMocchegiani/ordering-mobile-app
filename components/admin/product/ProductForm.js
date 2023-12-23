@@ -107,7 +107,6 @@ export default function ProductForm({product, setProduct, categories, discountCo
 
 
     }
-    console.log(image)
     return (
         <View style={styles.container}>
             <View style={styles.dataForm}>
@@ -182,8 +181,6 @@ export default function ProductForm({product, setProduct, categories, discountCo
                     <TouchableOpacity
                         onPress={()=> uploadImage()}>
                     <View style={styles.imageContainer}>
-                        {/* {image.length? <Image source={{...image[0], width:width*0.45, height:width*0.45}} width={width*0.45} height={width*0.45}/>:
-                        <Icon name={'upload'} size={150} color="#5c7ae3" />} */}
                         {image?<Image source={{uri:image, width:width*0.45, height:width*0.45}} width={width*0.45} height={width*0.45}/>: 
                         <Icon name={'upload'} size={150} color="#5c7ae3" />}
                     </View>

@@ -25,9 +25,6 @@ export default function Account({navigation}){
        logout,
        user,
     } = useAuth()
-    useEffect(()=>{
-        console.log(user)
-    },[user])
 
     async function handleLogout(){
         async function asistandLogout(){
@@ -71,7 +68,7 @@ export default function Account({navigation}){
 
 const styles = StyleSheet.create({
     container: {
-      marginTop:heigtStatusBar,
+        paddingTop:heigtStatusBar,
       flex: 1,
       width:width,
       backgroundColor: "#fff",
